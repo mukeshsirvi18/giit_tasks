@@ -1,7 +1,7 @@
 resource "aws_instance" "nandu-instance-pub" {
     ami           = "ami-0657605d763ac72a8"
     instance_type = "t2.micro"
-    subnet_id     = aws_subnet.nandu-pub-subnet-1.id
+    subnet_id     = module.vpc.public_subnets[0]
     key_name      = "ubuntu_pem"
     security_groups = [aws_security_group.nandu-pubSub-sg.id]
     count = var.instance_count["nandu-instance-pub"]
@@ -24,7 +24,7 @@ resource "aws_instance" "nandu-instance-pub" {
 resource "aws_instance" "nandu-instance-pvt" {
     ami           = "ami-0657605d763ac72a8"
     instance_type = "t2.micro"
-    subnet_id     = aws_subnet.nandu-pvt-subnet-1.id
+    subnet_id     = module.vpc.private_subnets[0]
     key_name      = "ubuntu_pem"
     security_groups = [aws_security_group.nandu-pvtSub-sg.id]
     count = var.instance_count["nandu-instance-pvt"]

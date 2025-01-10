@@ -1,7 +1,8 @@
 resource "aws_security_group" "nandu-pubSub-sg" {
   name        = "nandu-pubSub-sg"
   description = "allow inbound traffic on port 22 and 443"
-  vpc_id      = aws_vpc.nandu-vpc.id
+  vpc_id      = module.vpc.vpc_id
+              
 
   ingress {
     from_port        = 22
@@ -13,6 +14,13 @@ resource "aws_security_group" "nandu-pubSub-sg" {
   ingress {
     from_port        = 443
     to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]   // from anywhere to port 443
+    ipv6_cidr_blocks = ["::/0"]
+  }
+    ingress {
+    from_port        = 80
+    to_port          = 80
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]   // from anywhere to port 443
     ipv6_cidr_blocks = ["::/0"]
@@ -34,7 +42,7 @@ resource "aws_security_group" "nandu-pubSub-sg" {
 resource "aws_security_group" "nandu-pvtSub-sg" {
   name        = "nandu-pvtSub-sg"
   description = "allow inbound traffic on port 3306 and 22"
-  vpc_id      = aws_vpc.nandu-vpc.id
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
     from_port        = 22
