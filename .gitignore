@@ -9,3 +9,8 @@ vpc_ec2_task2/.terraform/
 vpc_ec2_task2/.terraform.lock.hcl
 vpc_ec2_task2/terraform.tfstate  
 vpc_ec2_task2/terraform.tfstate.backup
+
+eks/.terraform/
+eks/.terraform.lock.hcl
+eks/terraform.tfstate
+eks/terraform.tfstate.backup
