@@ -14,3 +14,8 @@ eks/.terraform/
 eks/.terraform.lock.hcl
 eks/terraform.tfstate
 eks/terraform.tfstate.backup
+
+ecs/.terraform/
+ecs/.terraform.lock.hcl
+ecs/terraform.tfstate
+ecs/terraform.tfstate.backup
