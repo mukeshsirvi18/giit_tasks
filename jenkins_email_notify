@@ -1,0 +1,76 @@
+//Create app in google account securities, use the password generated in jenkins email notification
+//SMTP port 465
+//SMTP server smtp.gmail.com
+//User Name nandusathyan0@gmail.com
+pipeline {
+    agent any
+
+    environment {
+        registryCredential = 'ecr:us-east-1:aws_cred'
+        j_front = "381492291062.dkr.ecr.us-east-1.amazonaws.com/jenkins/j_front"
+        j_back = "381492291062.dkr.ecr.us-east-1.amazonaws.com/jenkins/j_back"
+        j_mysql = "381492291062.dkr.ecr.us-east-1.amazonaws.com/jenkins_mysql"
+    }
+
+    options {
+        catchError(buildResult: 'FAILURE', stageResult: 'FAILURE')
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: "main", url: "https://github.com/pinnnacl/EMA.git"
+            }
+        }
+
+        stage('Build App Image') {
+            steps {                                
+                script {
+                    dockerImageFront = docker.build( j_front + ":$BUILD_NUMBER", "frontend/")
+                    dockerImageBack = docker.build( j_back + ":$BUILD_NUMBER", "backend/")
+                    dockerImageDB = docker.build( j_mysql + ":$BUILD_NUMBER", "mysql/")
+
+                    sh "docker tag ${j_front}:$BUILD_NUMBER ${j_front}:latest"
+                    sh "docker tag ${j_back}:$BUILD_NUMBER ${j_back}:latest"
+                    sh "docker tag ${j_mysql}:$BUILD_NUMBER ${j_mysql}:latest"
+
+                    sh "docker rmi ${dockerImageFront.id}"
+                    sh "docker rmi ${dockerImageBack.id}"
+                    sh "docker rmi ${dockerImageDB.id}"
+                }                          
+            }                                
+        }
+
+        stage('Login to ECR') {
+            steps {
+                script {
+                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 381492291062.dkr.ecr.us-east-1.amazonaws.com'
+                }
+            }
+        }
+
+        stage('Upload Docker Images to ECR') {
+            steps {
+                script {
+                    sh "docker ${j_front}:latest"
+                    sh "docker push ${j_back}:latest"
+                    sh "docker push ${j_mysql}:latest"
+                }
+            }
+        }
+
+        stage('Deploy images in Kubernetes environment') {
+            steps {
+                script {
+                    sh 'sudo kubectl apply -f kubernetes/'
+                }
+            }
+        }
+    }
+
+    post {  
+        failure {  
+            mail bcc: '', body: "<b>Example</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', subject: "ERROR CI: Project name -> ${env.JOB_NAME}", to: "nandusathyan0@gmail.com";  
+        }  
+    }  
+}
