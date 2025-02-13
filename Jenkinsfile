@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         registryCredential = 'ecr:us-east-1:aws_cred'
-        j_front = "381492291062.dkr.ecr.us-east-1.amazonaws.com/jenkins/j_front"
-        j_back = "381492291062.dkr.ecr.us-east-1.amazonaws.com/jenkins/j_back"
-        j_mysql = "381492291062.dkr.ecr.us-east-1.amazonaws.com/jenkins_mysql"
+        j_front = "010438482119.dkr.ecr.us-west-2.amazonaws.com/jenkins/j_front"
+        j_back = "010438482119.dkr.ecr.us-west-2.amazonaws.com/jenkins/j_back"
+        j_mysql = "010438482119.dkr.ecr.us-west-2.amazonaws.com/jenkins/mysql"
     }
 
     stages {
